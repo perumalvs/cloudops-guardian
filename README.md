@@ -79,4 +79,4 @@ Everything is pay-per-use (Lambda, DynamoDB on-demand, SES, Step Functions, Agen
 
 ## License
 
-Private repository, all rights reserved. Shared with the AWS CDS Agentic AI Partner Hackathon judges for evaluation only.
+Apache License 2.0, see [LICENSE](LICENSE).
