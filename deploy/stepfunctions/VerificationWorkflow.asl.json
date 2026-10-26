@@ -1,0 +1,85 @@
+{
+  "Comment": "CloudOps Guardian: repeat fresh READ verification after an ACTION until recovery is proven, a limit is hit, or it fails. Verification (not the API result) decides RESOLVED.",
+  "QueryLanguage": "JSONata",
+  "TimeoutSeconds": 3600,
+  "StartAt": "Wait",
+  "States": {
+    "Wait": {
+      "Type": "Wait",
+      "Seconds": "{% $states.input.waitSeconds %}",
+      "Next": "Verify"
+    },
+    "Verify": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:us-east-1:__ACCOUNT_ID__:function:CloudOpsGuardian-Orchestrator:$LATEST",
+        "Payload": "{% {'verify': true, 'caseId': $states.input.caseId, 'planId': $states.input.planId, 'attempt': $states.input.attempt} %}"
+      },
+      "Output": "{% $states.result.Payload %}",
+      "TimeoutSeconds": 120,
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException",
+            "States.TaskFailed"
+          ],
+          "IntervalSeconds": 15,
+          "MaxAttempts": 2,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Abort",
+          "Output": "{% $states.input %}"
+        }
+      ],
+      "Next": "IsDone"
+    },
+    "IsDone": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Condition": "{% $states.input.done = true %}",
+          "Next": "Finished"
+        }
+      ],
+      "Default": "Wait"
+    },
+    "Finished": {
+      "Type": "Succeed"
+    },
+    "Abort": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Comment": "Verification itself crashed: do not leave the case in VERIFYING forever.",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:us-east-1:__ACCOUNT_ID__:function:CloudOpsGuardian-Orchestrator:$LATEST",
+        "Payload": "{% {'abort': true, 'caseId': $states.input.caseId} %}"
+      },
+      "Output": "{% $states.result.Payload %}",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "VerificationFailed"
+        }
+      ],
+      "Next": "VerificationFailed"
+    },
+    "VerificationFailed": {
+      "Type": "Fail",
+      "Error": "VerificationFailed",
+      "Cause": "Verification could not complete; the case was escalated."
+    }
+  }
+}

@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 940" width="1500" height="940" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#374151"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b91c1c"/></marker></defs>
+<rect width="1500" height="940" fill="#ffffff"/>
+<text x="40" y="38" font-size="24" font-weight="800" fill="#111827">CloudOps Guardian: conversational incident response over email (Amazon SES + Bedrock AgentCore)</text>
+<text x="40" y="60" font-size="13" fill="#4b5563">An agent investigates an EC2 incident with governed read-only tools, then holds the conversation with the operator by email until the fix is approved, executed and verified.</text>
+<text x="40" y="86" font-size="11" font-weight="700" letter-spacing="1.5" fill="#6b7280">DETECT</text>
+<text x="330" y="86" font-size="11" font-weight="700" letter-spacing="1.5" fill="#6b7280">ORCHESTRATE</text>
+<text x="700" y="86" font-size="11" font-weight="700" letter-spacing="1.5" fill="#6b7280">INVESTIGATE (read-only)</text>
+<text x="1060" y="86" font-size="11" font-weight="700" letter-spacing="1.5" fill="#6b7280">ACT (governed write)</text>
+<rect x="40" y="100" width="190" height="60" rx="9" fill="#f1f5f9" stroke="#475569" stroke-width="1.6" />
+<text x="135.0" y="122" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">CloudWatch Alarm</text>
+<text x="135.0" y="140" text-anchor="middle" font-size="11.5" fill="#374151">EC2 CPU &gt; 80% (5 min avg)</text>
+<rect x="40" y="200" width="190" height="56" rx="9" fill="#fce7f3" stroke="#be185d" stroke-width="1.6" />
+<text x="135.0" y="222" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">Amazon EventBridge</text>
+<text x="135.0" y="240" text-anchor="middle" font-size="11.5" fill="#374151">alarm state-change rule</text>
+<rect x="40" y="296" width="190" height="66" rx="9" fill="#fce7f3" stroke="#be185d" stroke-width="1.6" />
+<text x="135.0" y="318" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">Step Functions</text>
+<text x="135.0" y="336" text-anchor="middle" font-size="11.5" fill="#374151">IncidentWorkflow</text>
+<text x="135.0" y="351" text-anchor="middle" font-size="11.5" fill="#374151">create case, then investigate</text>
+<rect x="40" y="400" width="190" height="60" rx="9" fill="#e0f2fe" stroke="#0369a1" stroke-width="1.6" />
+<text x="135.0" y="422" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">IncidentHandler</text>
+<text x="135.0" y="440" text-anchor="middle" font-size="11.5" fill="#374151">Lambda: opens case CG-…</text>
+<path d="M135,160 L135,200" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M135,256 L135,296" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M135,362 L135,400" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<circle cx="150" cy="180" r="11" fill="#111827"/><text x="150" y="184" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">1</text>
+<rect x="330" y="250" width="260" height="330" rx="9" fill="#e0f2fe" stroke="#0369a1" stroke-width="1.6" />
+<text x="460.0" y="272" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">Orchestrator (Lambda)</text>
+<text x="345" y="310" font-size="11.5" fill="#374151">Case state machine (14 states)</text>
+<text x="345" y="332" font-size="11.5" fill="#374151">Plan builder: immutable, parameter-hashed</text>
+<text x="345" y="354" font-size="11.5" fill="#374151">Approval validator: sender allow-list,</text>
+<text x="345" y="376" font-size="11.5" fill="#374151">  single-use token, SES auth verdicts</text>
+<text x="345" y="398" font-size="11.5" fill="#374151">Execute-once claim (idempotent)</text>
+<text x="345" y="420" font-size="11.5" fill="#374151">Pre-action re-check of live state</text>
+<text x="345" y="442" font-size="11.5" fill="#374151">Audit trail with secret redaction</text>
+<text x="345" y="464" font-size="11.5" fill="#374151">Kill switch: EXECUTION_ENABLED</text>
+<path d="M230,329 L330,329" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="244" y="322" font-size="11" fill="#374151" font-style="italic">investigate</text>
+<rect x="330" y="640" width="260" height="64" rx="9" fill="#dcfce7" stroke="#15803d" stroke-width="1.6" />
+<text x="460.0" y="662" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">DynamoDB: CaseState</text>
+<text x="460.0" y="680" text-anchor="middle" font-size="11.5" fill="#374151">single table: case, plans, evidence,</text>
+<text x="460.0" y="695" text-anchor="middle" font-size="11.5" fill="#374151">approvals, executions, audit</text>
+<path d="M460,580 L460,640" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)" marker-start="url(#a)"/>
+<path d="M230,430 L300,430 L300,662 L330,662" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="236" y="424" font-size="11" fill="#374151" font-style="italic">create case</text>
+<rect x="40" y="650" width="190" height="56" rx="9" fill="#e0f2fe" stroke="#0369a1" stroke-width="1.6" />
+<text x="135.0" y="672" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">Dashboard (Lambda)</text>
+<text x="135.0" y="690" text-anchor="middle" font-size="11.5" fill="#374151">read-only, masked</text>
+<path d="M230,686 L330,686" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="262" y="680" font-size="11" fill="#374151" font-style="italic">query</text>
+<rect x="40" y="760" width="190" height="50" rx="9" fill="#f1f5f9" stroke="#475569" stroke-width="1.6" />
+<text x="135.0" y="782" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">Judges / operators</text>
+<text x="135.0" y="800" text-anchor="middle" font-size="11.5" fill="#374151">browser</text>
+<path d="M135,760 L135,706" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<rect x="700" y="100" width="240" height="72" rx="9" fill="#f3e8ff" stroke="#7e22ce" stroke-width="1.6" />
+<text x="820.0" y="122" text-anchor="middle" font-weight="700" font-size="12.5" fill="#111827">AgentCore Runtime (reasoning)</text>
+<text x="820.0" y="140" text-anchor="middle" font-size="11.5" fill="#374151">Bedrock model picks READ tools,</text>
+<text x="820.0" y="155" text-anchor="middle" font-size="11.5" fill="#374151">returns diagnosis + ranked options</text>
+<rect x="700" y="205" width="240" height="56" rx="9" fill="#f3e8ff" stroke="#7e22ce" stroke-width="1.6" />
+<text x="820.0" y="227" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">AgentCore Gateway (READ)</text>
+<text x="820.0" y="245" text-anchor="middle" font-size="11.5" fill="#374151">IAM-authenticated MCP</text>
+<rect x="700" y="290" width="240" height="56" rx="9" fill="#f3e8ff" stroke="#7e22ce" stroke-width="1.6" />
+<text x="820.0" y="312" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">READ MCP Runtime</text>
+<text x="820.0" y="330" text-anchor="middle" font-size="11.5" fill="#374151">7 tools: instance, CPU, alarm, processes</text>
+<rect x="700" y="375" width="240" height="56" rx="9" fill="#f1f5f9" stroke="#475569" stroke-width="1.6" />
+<text x="820.0" y="397" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">EC2 · CloudWatch · SSM</text>
+<text x="820.0" y="415" text-anchor="middle" font-size="11.5" fill="#374151">read-only diagnostics</text>
+<path d="M500,250 L500,136 L700,136" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="530" y="128" font-size="11" fill="#374151" font-style="italic">investigate</text>
+<path d="M820,172 L820,205" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M820,261 L820,290" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M820,346 L820,375" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<circle cx="500" cy="190" r="11" fill="#111827"/><text x="500" y="194" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">2</text>
+<rect x="1050" y="205" width="260" height="76" rx="9" fill="#fee2e2" stroke="#b91c1c" stroke-width="1.6" />
+<text x="1180.0" y="227" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">AgentCore Gateway (ACTION)</text>
+<text x="1180.0" y="245" text-anchor="middle" font-size="11.5" fill="#374151">Cedar permits only terminate_process</text>
+<text x="1180.0" y="260" text-anchor="middle" font-size="11.5" fill="#374151">and reboot_demo_instance</text>
+<rect x="1060" y="310" width="240" height="56" rx="9" fill="#fee2e2" stroke="#b91c1c" stroke-width="1.6" />
+<text x="1180.0" y="332" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">ACTION MCP Runtime</text>
+<text x="1180.0" y="350" text-anchor="middle" font-size="11.5" fill="#374151">plan-bound, tag-gated tools</text>
+<rect x="1060" y="395" width="240" height="56" rx="9" fill="#f1f5f9" stroke="#475569" stroke-width="1.6" />
+<text x="1180.0" y="417" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">SSM Run Command · EC2</text>
+<text x="1180.0" y="435" text-anchor="middle" font-size="11.5" fill="#374151">tagged demo instance only</text>
+<path d="M540,250 L540,189 L1180,189 L1180,205" fill="none" stroke="#b91c1c" stroke-width="1.8" marker-end="url(#r)"/>
+<text x="960" y="183" font-size="11" fill="#b91c1c" font-style="italic">execute, only after approval + re-check</text>
+<path d="M1180,281 L1180,310" fill="none" stroke="#b91c1c" stroke-width="1.8" marker-end="url(#r)"/>
+<path d="M1180,366 L1180,395" fill="none" stroke="#b91c1c" stroke-width="1.8" marker-end="url(#r)"/>
+<circle cx="640" cy="189" r="11" fill="#b91c1c"/><text x="640" y="193" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">6</text>
+<rect x="1330" y="205" width="130" height="146" rx="9" fill="#fce7f3" stroke="#be185d" stroke-width="1.6" />
+<text x="1395.0" y="227" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">Verification</text>
+<text x="1395.0" y="245" text-anchor="middle" font-size="11.5" fill="#374151">Step Functions loop:</text>
+<text x="1395.0" y="260" text-anchor="middle" font-size="11.5" fill="#374151">wait, fresh READ,</text>
+<text x="1395.0" y="275" text-anchor="middle" font-size="11.5" fill="#374151">re-check alarm.</text>
+<text x="1395.0" y="290" text-anchor="middle" font-size="11.5" fill="#374151">Recovery proven</text>
+<text x="1395.0" y="305" text-anchor="middle" font-size="11.5" fill="#374151">then RESOLVED</text>
+<path d="M1300,423 L1395,423 L1395,351" fill="none" stroke="#374151" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<circle cx="1395" cy="395" r="11" fill="#be185d"/><text x="1395" y="399" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">7</text>
+<rect x="660" y="600" width="800" height="270" rx="14" fill="#fff7ed" stroke="#c2410c" stroke-width="2" stroke-dasharray="8 5"/>
+<text x="680" y="626" font-size="13" font-weight="800" fill="#c2410c" letter-spacing="1">AWS COMMUNICATION DEVELOPER SERVICES: THE CONVERSATION CHANNEL</text>
+<rect x="700" y="650" width="230" height="76" rx="9" fill="#fff7ed" stroke="#c2410c" stroke-width="1.6" />
+<text x="815.0" y="672" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">Amazon SES (outbound)</text>
+<text x="815.0" y="690" text-anchor="middle" font-size="11.5" fill="#374151">diagnosis, plan, and how to reply:</text>
+<text x="815.0" y="705" text-anchor="middle" font-size="11.5" fill="#374151">DETAILS · approve · reject ·</text>
+<text x="815.0" y="720" text-anchor="middle" font-size="11.5" fill="#374151">PROPOSE n · ESCALATE</text>
+<rect x="1260" y="650" width="170" height="76" rx="9" fill="#f1f5f9" stroke="#475569" stroke-width="1.6" />
+<text x="1345.0" y="672" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">Operator mailbox</text>
+<text x="1345.0" y="690" text-anchor="middle" font-size="11.5" fill="#374151">reads plan, replies in</text>
+<text x="1345.0" y="705" text-anchor="middle" font-size="11.5" fill="#374151">plain language</text>
+<path d="M930,688 L1260,688" fill="none" stroke="#c2410c" stroke-width="1.8" marker-end="url(#o)"/>
+<text x="1040" y="680" font-size="11" fill="#c2410c" font-style="italic">plan email</text>
+<rect x="1050" y="770" width="200" height="76" rx="9" fill="#fff7ed" stroke="#c2410c" stroke-width="1.6" />
+<text x="1150.0" y="792" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">Amazon SES (inbound)</text>
+<text x="1150.0" y="810" text-anchor="middle" font-size="11.5" fill="#374151">receipt rule: spam, virus, SPF/</text>
+<text x="1150.0" y="825" text-anchor="middle" font-size="11.5" fill="#374151">DKIM/DMARC verdicts kept</text>
+<rect x="850" y="770" width="150" height="76" rx="9" fill="#dcfce7" stroke="#15803d" stroke-width="1.6" />
+<text x="925.0" y="792" text-anchor="middle" font-weight="700" font-size="14.0" fill="#111827">S3</text>
+<text x="925.0" y="810" text-anchor="middle" font-size="11.5" fill="#374151">raw inbound mail</text>
+<rect x="690" y="770" width="130" height="76" rx="9" fill="#e0f2fe" stroke="#0369a1" stroke-width="1.6" />
+<text x="755.0" y="792" text-anchor="middle" font-weight="700" font-size="13.1" fill="#111827">Inbound parser</text>
+<text x="755.0" y="810" text-anchor="middle" font-size="11.5" fill="#374151">Lambda: classify</text>
+<text x="755.0" y="825" text-anchor="middle" font-size="11.5" fill="#374151">intent, extract ids</text>
+<path d="M1345,726 L1345,808 L1250,808" fill="none" stroke="#c2410c" stroke-width="1.8" marker-end="url(#o)"/>
+<text x="1356" y="784" font-size="11" fill="#c2410c" font-style="italic">reply</text>
+<path d="M1050,808 L1000,808" fill="none" stroke="#c2410c" stroke-width="1.8" marker-end="url(#o)"/>
+<path d="M850,808 L820,808" fill="none" stroke="#374151" stroke-width="1.8" marker-end="url(#a)"/>
+<circle cx="1345" cy="760" r="11" fill="#c2410c"/><text x="1345" y="764" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">4</text>
+<circle cx="645" cy="560" r="11" fill="#c2410c"/><text x="645" y="564" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">3</text>
+<path d="M590,480 L645,480 L645,688 L700,688" fill="none" stroke="#c2410c" stroke-width="1.8" marker-end="url(#o)"/>
+<path d="M690,808 L612,808 L612,540 L590,540" fill="none" stroke="#c2410c" stroke-width="1.8" marker-end="url(#o)"/>
+<circle cx="612" cy="610" r="11" fill="#c2410c"/><text x="612" y="614" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">5</text>
+<rect x="255" y="770" width="14" height="12" rx="3" fill="#fff7ed" stroke="#c2410c" stroke-width="1.4"/><text x="275" y="780" font-size="11" fill="#374151">CDS (SES)</text>
+<rect x="255" y="790" width="14" height="12" rx="3" fill="#f3e8ff" stroke="#7e22ce" stroke-width="1.4"/><text x="275" y="800" font-size="11" fill="#374151">Bedrock AgentCore</text>
+<rect x="255" y="810" width="14" height="12" rx="3" fill="#fce7f3" stroke="#be185d" stroke-width="1.4"/><text x="275" y="820" font-size="11" fill="#374151">Step Functions / EventBridge</text>
+<rect x="445" y="770" width="14" height="12" rx="3" fill="#e0f2fe" stroke="#0369a1" stroke-width="1.4"/><text x="465" y="780" font-size="11" fill="#374151">Lambda</text>
+<rect x="445" y="790" width="14" height="12" rx="3" fill="#dcfce7" stroke="#15803d" stroke-width="1.4"/><text x="465" y="800" font-size="11" fill="#374151">DynamoDB / S3</text>
+<rect x="445" y="810" width="14" height="12" rx="3" fill="#fee2e2" stroke="#b91c1c" stroke-width="1.4"/><text x="465" y="820" font-size="11" fill="#374151">Governed write path</text>
+<text x="40" y="902" font-size="11" fill="#6b7280">Numbered steps: 1 alarm · 2 investigate · 3 plan email · 4 operator reply · 5 validate approval · 6 execute · 7 verify</text>
+<text x="40" y="922" font-size="11" fill="#6b7280">Writes happen only after: allow-listed approver, single-use token, live re-check, Cedar permit. Verification, not the API result, decides RESOLVED.</text>
+</svg>

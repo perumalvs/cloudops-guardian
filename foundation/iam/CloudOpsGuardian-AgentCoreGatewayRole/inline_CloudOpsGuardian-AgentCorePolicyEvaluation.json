@@ -1,0 +1,23 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PolicyEngineConfiguration",
+            "Effect": "Allow",
+            "Action": "bedrock-agentcore:GetPolicyEngine",
+            "Resource": "arn:aws:bedrock-agentcore:us-east-1:__ACCOUNT_ID__:policy-engine/cloudopsguardian_action_policy_engine-__POLICY_ENGINE_SUFFIX__"
+        },
+        {
+            "Sid": "PolicyEngineAuthorization",
+            "Effect": "Allow",
+            "Action": [
+                "bedrock-agentcore:AuthorizeAction",
+                "bedrock-agentcore:PartiallyAuthorizeActions"
+            ],
+            "Resource": [
+                "arn:aws:bedrock-agentcore:us-east-1:__ACCOUNT_ID__:policy-engine/cloudopsguardian_action_policy_engine-__POLICY_ENGINE_SUFFIX__",
+                "arn:aws:bedrock-agentcore:us-east-1:__ACCOUNT_ID__:gateway/hackathon-cloudopsguardian-action-tools-gateway-__ACTION_GATEWAY_SUFFIX__"
+            ]
+        }
+    ]
+}

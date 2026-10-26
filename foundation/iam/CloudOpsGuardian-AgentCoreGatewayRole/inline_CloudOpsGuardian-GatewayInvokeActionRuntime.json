@@ -1,0 +1,14 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowInvokeCloudOpsGuardianActionRuntime",
+            "Effect": "Allow",
+            "Action": "bedrock-agentcore:InvokeAgentRuntime",
+            "Resource": [
+                "arn:aws:bedrock-agentcore:us-east-1:__ACCOUNT_ID__:runtime/cloudops_guardian_mcp_action_tools-__ACTION_RUNTIME_SUFFIX__",
+                "arn:aws:bedrock-agentcore:us-east-1:__ACCOUNT_ID__:runtime/cloudops_guardian_mcp_action_tools-__ACTION_RUNTIME_SUFFIX__/runtime-endpoint/DEFAULT"
+            ]
+        }
+    ]
+}

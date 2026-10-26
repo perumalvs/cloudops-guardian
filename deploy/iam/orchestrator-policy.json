@@ -1,0 +1,76 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CaseStateTable",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query",
+        "dynamodb:ConditionCheckItem"
+      ],
+      "Resource": "arn:aws:dynamodb:us-east-1:__ACCOUNT_ID__:table/CloudOpsGuardian-CaseState"
+    },
+    {
+      "Sid": "Logs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:us-east-1:__ACCOUNT_ID__:log-group:/aws/lambda/CloudOpsGuardian-Orchestrator:*"
+    },
+    {
+      "Sid": "SendMail",
+      "Effect": "Allow",
+      "Action": "ses:SendRawEmail",
+      "Resource": [
+        "arn:aws:ses:us-east-1:__ACCOUNT_ID__:identity/__SES_DOMAIN__",
+        "arn:aws:ses:us-east-1:__ACCOUNT_ID__:identity/__APPROVER_EMAIL__",
+        "arn:aws:ses:us-east-1:__ACCOUNT_ID__:identity/__OPERATOR_EMAIL_2__"
+      ]
+    },
+    {
+      "Sid": "InvokeReasoningRuntime",
+      "Effect": "Allow",
+      "Action": "bedrock-agentcore:InvokeAgentRuntime",
+      "Resource": [
+        "arn:aws:bedrock-agentcore:us-east-1:__ACCOUNT_ID__:runtime/hackathon_cloudopsguardin_runtime_agent-__REASONING_RUNTIME_SUFFIX__",
+        "arn:aws:bedrock-agentcore:us-east-1:__ACCOUNT_ID__:runtime/hackathon_cloudopsguardin_runtime_agent-__REASONING_RUNTIME_SUFFIX__/runtime-endpoint/DEFAULT"
+      ]
+    },
+    {
+      "Sid": "InvokeReadGatewayOnly",
+      "Effect": "Allow",
+      "Action": "bedrock-agentcore:InvokeGateway",
+      "Resource": "arn:aws:bedrock-agentcore:us-east-1:__ACCOUNT_ID__:gateway/hackathon-cloudopsguardian-gateway-__READ_GATEWAY_SUFFIX__"
+    },
+    {
+      "Sid": "ReadApprovalPepper",
+      "Effect": "Allow",
+      "Action": "ssm:GetParameter",
+      "Resource": "arn:aws:ssm:us-east-1:__ACCOUNT_ID__:parameter/cloudops-guardian/approval-token-pepper"
+    },
+    {
+      "Sid": "ReadInboundMail",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::__INBOUND_BUCKET__/*"
+    },
+    {
+      "Sid": "InvokeActionGateway",
+      "Effect": "Allow",
+      "Action": "bedrock-agentcore:InvokeGateway",
+      "Resource": "arn:aws:bedrock-agentcore:us-east-1:__ACCOUNT_ID__:gateway/hackathon-cloudopsguardian-action-tools-gateway-__ACTION_GATEWAY_SUFFIX__"
+    },
+    {
+      "Sid": "StartVerificationWorkflow",
+      "Effect": "Allow",
+      "Action": "states:StartExecution",
+      "Resource": "arn:aws:states:us-east-1:__ACCOUNT_ID__:stateMachine:CloudOpsGuardian-VerificationWorkflow"
+    }
+  ]
+}

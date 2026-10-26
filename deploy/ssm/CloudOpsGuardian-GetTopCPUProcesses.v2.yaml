@@ -1,0 +1,8 @@
+schemaVersion: '2.2'
+description: 'CloudOps Guardian governed READ diagnostic - returns CPU consuming processes (full list; the MCP tool limits the top-N view)'
+mainSteps:
+  - action: aws:runShellScript
+    name: getTopCPUProcesses
+    inputs:
+      runCommand:
+        - "ps -eo pid,ppid,user,comm,%cpu,%mem --sort=-%cpu"

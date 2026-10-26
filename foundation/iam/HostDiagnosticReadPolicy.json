@@ -1,0 +1,29 @@
+{
+    "PolicyVersion": {
+        "Document": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "AllowOnlyGovernedHostDiagnostic",
+                    "Effect": "Allow",
+                    "Action": "ssm:SendCommand",
+                    "Resource": [
+                        "arn:aws:ssm:us-east-1:__ACCOUNT_ID__:document/CloudOpsGuardian-GetTopCPUProcesses",
+                        "arn:aws:ec2:us-east-1:__ACCOUNT_ID__:instance/__DEMO_INSTANCE_ID__"
+                    ]
+                },
+                {
+                    "Sid": "AllowReadDiagnosticResult",
+                    "Effect": "Allow",
+                    "Action": [
+                        "ssm:GetCommandInvocation"
+                    ],
+                    "Resource": "*"
+                }
+            ]
+        },
+        "VersionId": "v1",
+        "IsDefaultVersion": true,
+        "CreateDate": "2026-10-20T17:36:01+00:00"
+    }
+}

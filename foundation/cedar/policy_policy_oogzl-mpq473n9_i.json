@@ -1,0 +1,16 @@
+{
+    "policyId": "policy_oogzl-mpq473n9_i",
+    "name": "policy_oogzl",
+    "policyEngineId": "cloudopsguardian_action_policy_engine-__POLICY_ENGINE_SUFFIX__",
+    "createdAt": "2026-10-21T14:19:54.593509+00:00",
+    "updatedAt": "2026-10-21T14:19:59.459545+00:00",
+    "policyArn": "arn:aws:bedrock-agentcore:us-east-1:__ACCOUNT_ID__:policy-engine/cloudopsguardian_action_policy_engine-__POLICY_ENGINE_SUFFIX__/policy/policy_oogzl-mpq473n9_i",
+    "status": "ACTIVE",
+    "enforcementMode": "ACTIVE",
+    "definition": {
+        "policy": {
+            "statement": "permit (\n    principal,\n    action == AgentCore::Action::\"CloudOpsGuardian-ACTION-Tools___terminate_process\",\n    resource == AgentCore::Gateway::\"arn:aws:bedrock-agentcore:us-east-1:__ACCOUNT_ID__:gateway/hackathon-cloudopsguardian-action-tools-gateway-__ACTION_GATEWAY_SUFFIX__\"\n);\n\n"
+        }
+    },
+    "statusReasons": []
+}

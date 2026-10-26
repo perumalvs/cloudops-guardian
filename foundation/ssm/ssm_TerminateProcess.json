@@ -1,0 +1,9 @@
+{
+    "Name": "CloudOpsGuardian-TerminateProcess",
+    "CreatedDate": "2026-10-21T08:14:53.360000+05:30",
+    "DocumentVersion": "1",
+    "Status": "Active",
+    "Content": "{\n  \"schemaVersion\" : \"2.2\",\n  \"description\" : \"CloudOps Guardian governed process termination action\",\n  \"parameters\" : {\n    \"ProcessId\" : {\n      \"type\" : \"String\",\n      \"description\" : \"PID approved in the CloudOps Guardian remediation plan\",\n      \"allowedPattern\" : \"^[1-9][0-9]*$\"\n    },\n    \"ExpectedProcessName\" : {\n      \"type\" : \"String\",\n      \"description\" : \"Process name observed during investigation and bound to the approved plan\",\n      \"allowedPattern\" : \"^[A-Za-z0-9._+-]+$\"\n    }\n  },\n  \"mainSteps\" : [ {\n    \"action\" : \"aws:runShellScript\",\n    \"name\" : \"terminateApprovedProcess\",\n    \"inputs\" : {\n      \"runCommand\" : [ \"PID=\\\"{{ ProcessId }}\\\"\\nEXPECTED=\\\"{{ ExpectedProcessName }}\\\"\\n\\nCURRENT=$(ps -p \\\"$PID\\\" -o comm= | xargs)\\n\\nif [ -z \\\"$CURRENT\\\" ]; then\\n  echo \\\"REFUSED: process no longer exists\\\"\\n  exit 20\\nfi\\n\\nif [ \\\"$CURRENT\\\" != \\\"$EXPECTED\\\" ]; then\\n  echo \\\"REFUSED: process identity changed\\\"\\n  exit 21\\nfi\\n\\nkill \\\"$PID\\\"\\n\\necho \\\"Termination signal sent to validated process\\\"\" ]\n    }\n  } ]\n}",
+    "DocumentType": "Command",
+    "DocumentFormat": "JSON"
+}

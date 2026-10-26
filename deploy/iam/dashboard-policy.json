@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CaseStateReadOnly",
+      "Effect": "Allow",
+      "Action": ["dynamodb:Query", "dynamodb:Scan"],
+      "Resource": "arn:aws:dynamodb:us-east-1:__ACCOUNT_ID__:table/CloudOpsGuardian-CaseState"
+    },
+    {
+      "Sid": "Logs",
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "arn:aws:logs:us-east-1:__ACCOUNT_ID__:log-group:/aws/lambda/CloudOpsGuardian-Dashboard:*"
+    }
+  ]
+}

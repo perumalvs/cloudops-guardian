@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CloudOps Guardian</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1b2430; --mute:#667085; --line:#e3e7ed; --accent:#2457d6;
+          --ok:#12805c; --warn:#a15c00; --bad:#b42318; --info:#2457d6; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0e1116; --card:#171b22; --ink:#e7eaf0; --mute:#97a1b0;
+          --line:#2a303a; --accent:#7aa2ff; --ok:#4cc38a; --warn:#e8a64a; --bad:#ff7b72; --info:#7aa2ff; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  header { padding:20px 16px 8px; max-width:1100px; margin:0 auto; }
+  h1 { margin:0; font-size:22px; } .sub { color:var(--mute); margin:2px 0 0; }
+  main { max-width:1100px; margin:0 auto; padding:8px 16px 40px; display:grid; gap:16px; grid-template-columns:340px 1fr; }
+  @media (max-width:800px) { main { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; }
+  h2 { font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--mute); margin:0 0 10px; }
+  .case { display:block; width:100%; text-align:left; background:none; color:inherit; font:inherit; border:1px solid var(--line);
+          border-radius:8px; padding:10px; margin-bottom:8px; cursor:pointer; }
+  .case:hover, .case[aria-current=true] { border-color:var(--accent); }
+  .row { display:flex; justify-content:space-between; gap:8px; align-items:center; }
+  .id { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; }
+  .when { color:var(--mute); font-size:12px; }
+  .chip { font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px; border:1px solid currentColor; white-space:nowrap; }
+  .ok { color:var(--ok); } .warn { color:var(--warn); } .bad { color:var(--bad); } .info { color:var(--info); } .mute { color:var(--mute); }
+  .flow { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 14px; }
+  .step { font-size:12px; padding:3px 9px; border-radius:6px; border:1px solid var(--line); color:var(--mute); }
+  .step.done { color:var(--ok); border-color:var(--ok); } .step.now { background:var(--accent); color:#fff; border-color:var(--accent); }
+  ol.tl { list-style:none; margin:0; padding:0 0 0 14px; border-left:2px solid var(--line); }
+  ol.tl li { position:relative; padding:0 0 14px 14px; }
+  ol.tl li::before { content:""; position:absolute; left:-21px; top:6px; width:10px; height:10px; border-radius:50%; background:var(--dot,var(--mute)); }
+  .k-plan { --dot:var(--warn); } .k-approval { --dot:var(--info); } .k-execution { --dot:var(--bad); }
+  .k-verification { --dot:var(--ok); } .k-evidence { --dot:var(--accent); }
+  details summary { cursor:pointer; color:var(--mute); font-size:12px; }
+  pre { margin:6px 0 0; padding:8px; background:var(--bg); border:1px solid var(--line); border-radius:6px; overflow:auto;
+        font-size:12px; max-height:220px; white-space:pre-wrap; word-break:break-word; }
+  .plan { border:1px solid var(--line); border-radius:8px; padding:10px; margin-bottom:8px; }
+  .plan b { font-size:13px; } .plan p { margin:4px 0; font-size:13px; }
+  .empty { color:var(--mute); padding:20px 0; text-align:center; }
+  code { font-family:ui-monospace,Menlo,Consolas,monospace; background:var(--bg); padding:1px 5px; border-radius:4px; font-size:13px; }
+  .how { grid-column:1 / -1; } .how ul { margin:0; padding-left:18px; } .how li { margin-bottom:4px; }
+  footer { max-width:1100px; margin:0 auto; padding:0 16px 24px; color:var(--mute); font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>CloudOps Guardian</h1>
+  <p class="sub">An agent investigates cloud incidents and holds the conversation with operators over email (Amazon SES). This page is a read-only view; approvals happen by email only.</p>
+</header>
+<main>
+  <section class="card" aria-label="Cases">
+    <h2>Cases <span id="count" class="mute"></span></h2>
+    <div id="list"><div class="empty">Loading...</div></div>
+  </section>
+  <section class="card" aria-label="Case detail" id="detail"><div class="empty">Select a case.</div></section>
+  <section class="card how">
+    <h2>How to interact</h2>
+    <ul>
+      <li>Push a CloudWatch alarm for the demo instance past 80% CPU (for example, run a CPU load on it). A case appears here within a minute.</li>
+      <li>The agent investigates through the READ gateway and emails the operator a diagnosis and proposed plan.</li>
+      <li>Reply by email: <code>DETAILS</code> for more evidence, a free-text question to follow up, <code>APPROVE PLAN-... &lt;token&gt;</code> to run the plan, <code>REJECT</code> to decline, or <code>ESCALATE</code> to hand over to a human.</li>
+      <li>Every approved action is re-checked before it runs and verified afterwards. This page updates every 15 seconds.</li>
+    </ul>
+  </section>
+</main>
+<footer>Read-only. Emails are masked and secrets are never stored or shown.</footer>
+<script>
+const FLOW = ["DETECTED","INVESTIGATING","DIAGNOSED","AWAITING_APPROVAL","APPROVED","EXECUTING","VERIFYING","RESOLVED"];
+const TONE = { RESOLVED:"ok", NO_ACTION:"ok", REJECTED:"mute", EXPIRED:"mute", ESCALATED:"warn", REMEDIATION_FAILED:"bad",
+               AWAITING_APPROVAL:"warn", AWAITING_USER:"warn" };
+let selected = null;
+
+function el(tag, attrs, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) { if (k === "class") n.className = v; else n.setAttribute(k, v); }
+  for (const kid of kids) n.append(kid instanceof Node ? kid : document.createTextNode(kid ?? ""));
+  return n;
+}
+const status = s => (s === "OPEN" ? "DETECTED" : s);
+const chip = s => el("span", { class: "chip " + (TONE[status(s)] || "info") }, status(s).replaceAll("_", " "));
+const when = t => t ? new Date(t).toLocaleString() : "";
+const api = async p => { const r = await fetch(p); if (!r.ok) throw new Error(r.status); return r.json(); };
+
+function pretty(d) { return typeof d === "string" ? d : JSON.stringify(d, null, 2); }
+
+async function loadList() {
+  const { cases } = await api("/api/cases");
+  const list = document.getElementById("list");
+  document.getElementById("count").textContent = cases.length ? "(" + cases.length + ")" : "";
+  list.replaceChildren(...(cases.length ? cases.map(c => {
+    const b = el("button", { class: "case", "aria-current": String(c.caseId === selected) },
+      el("div", { class: "row" }, el("span", { class: "id" }, c.caseId), chip(c.status)),
+      el("div", { class: "when" }, (c.alarmName || "") + " · " + when(c.createdAt)));
+    b.onclick = () => { selected = c.caseId; refresh(); };
+    return b;
+  }) : [el("div", { class: "empty" }, "No cases yet.")]));
+  if (!selected && cases.length) { selected = cases[0].caseId; await loadDetail(); }
+}
+
+async function loadDetail() {
+  if (!selected) return;
+  const d = await api("/api/cases/" + selected);
+  const cur = status(d.case.status), idx = FLOW.indexOf(cur);
+  const flow = el("div", { class: "flow" }, ...FLOW.map((s, i) =>
+    el("span", { class: "step" + (s === cur ? " now" : i < idx ? " done" : "") }, s.replaceAll("_", " "))));
+  const side = FLOW.includes(cur) ? null : el("p", {}, "Ended as ", chip(cur));
+  const plans = d.plans.map(p => el("div", { class: "plan" },
+    el("div", { class: "row" }, el("b", {}, p.planId + " · " + p.capability), chip(p.planStatus)),
+    el("p", {}, "Resource: ", p.resource ?? ""), el("p", {}, p.diagnosis ?? ""),
+    el("p", { class: "mute" }, "Risk: " + (p.risk ?? "") + " · Impact: " + (p.impact ?? ""))));
+  const tl = el("ol", { class: "tl" }, ...d.timeline.map(e => el("li", { class: "k-" + e.kind },
+    el("div", { class: "row" }, el("b", {}, e.title), el("span", { class: "when" }, when(e.at))),
+    e.detail ? el("details", {}, el("summary", {}, "details"), el("pre", {}, pretty(e.detail))) : "")));
+  document.getElementById("detail").replaceChildren(
+    el("div", { class: "row" }, el("h2", {}, "Case ", d.case.caseId), chip(cur)),
+    el("p", { class: "mute" }, (d.case.alarmName || "") + " · opened " + when(d.case.createdAt)),
+    flow, ...(side ? [side] : []),
+    ...(plans.length ? [el("h2", {}, "Plans"), ...plans] : []),
+    el("h2", {}, "Timeline"), tl);
+}
+
+async function refresh() {
+  try { await loadList(); await loadDetail(); }
+  catch (e) { document.getElementById("list").replaceChildren(el("div", { class: "empty" }, "Could not load data (" + e.message + ").")); }
+}
+refresh();
+setInterval(refresh, 15000);
+</script>
+</body>
+</html>

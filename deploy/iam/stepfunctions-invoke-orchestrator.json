@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InvokeCloudOpsGuardianOrchestrator",
+      "Effect": "Allow",
+      "Action": "lambda:InvokeFunction",
+      "Resource": [
+        "arn:aws:lambda:us-east-1:__ACCOUNT_ID__:function:CloudOpsGuardian-Orchestrator",
+        "arn:aws:lambda:us-east-1:__ACCOUNT_ID__:function:CloudOpsGuardian-Orchestrator:$LATEST"
+      ]
+    }
+  ]
+}

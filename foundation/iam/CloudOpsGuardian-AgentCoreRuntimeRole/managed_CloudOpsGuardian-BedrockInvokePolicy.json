@@ -1,0 +1,29 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "InvokeCloudOpsGuardianUSInferenceProfile",
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:InvokeModel",
+                "bedrock:InvokeModelWithResponseStream"
+            ],
+            "Resource": [
+                "arn:aws:bedrock:us-east-1:__ACCOUNT_ID__:inference-profile/us.anthropic.claude-sonnet-5-5"
+            ]
+        },
+        {
+            "Sid": "InvokeClaudeSonnet55ThroughUSProfile",
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:InvokeModel",
+                "bedrock:InvokeModelWithResponseStream"
+            ],
+            "Resource": [
+                "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-sonnet-5-5",
+                "arn:aws:bedrock:us-east-2::foundation-model/anthropic.claude-sonnet-5-5",
+                "arn:aws:bedrock:us-west-2::foundation-model/anthropic.claude-sonnet-5-5"
+            ]
+        }
+    ]
+}

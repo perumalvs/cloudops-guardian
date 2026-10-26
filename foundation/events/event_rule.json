@@ -1,0 +1,9 @@
+{
+    "Name": "CloudOpsGuardian-IncidentRule",
+    "Arn": "arn:aws:events:us-east-1:__ACCOUNT_ID__:rule/CloudOpsGuardian-IncidentRule",
+    "EventPattern": "{\"source\":[\"aws.cloudwatch\"],\"detail-type\":[\"CloudWatch Alarm State Change\"],\"detail\":{\"alarmName\":[\"CloudOpsGuardian-EC2CPUAlarm\"],\"state\":{\"value\":[\"ALARM\"]}}}",
+    "State": "ENABLED",
+    "Description": "Triggers the CloudOps Guardian incident workflow when the demo EC2 CPU alarm enters ALARM state",
+    "EventBusName": "default",
+    "CreatedBy": "__ACCOUNT_ID__"
+}

@@ -1,0 +1,71 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AgentCoreRuntimeLogGroupAccess",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogStreams",
+                "logs:CreateLogGroup"
+            ],
+            "Resource": [
+                "arn:aws:logs:us-east-1:__ACCOUNT_ID__:log-group:/aws/bedrock-agentcore/runtimes/*"
+            ]
+        },
+        {
+            "Sid": "AgentCoreRuntimeLogResourcePolicy",
+            "Effect": "Allow",
+            "Action": [
+                "logs:PutResourcePolicy"
+            ],
+            "Resource": [
+                "arn:aws:logs:us-east-1:__ACCOUNT_ID__:log-group:/aws/bedrock-agentcore/runtimes/hackathon_cloudopsguardin_runtime_agent-*"
+            ]
+        },
+        {
+            "Sid": "AgentCoreDescribeLogGroups",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DescribeLogGroups"
+            ],
+            "Resource": [
+                "arn:aws:logs:us-east-1:__ACCOUNT_ID__:log-group:*"
+            ]
+        },
+        {
+            "Sid": "AgentCoreRuntimeLogWrites",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:logs:us-east-1:__ACCOUNT_ID__:log-group:/aws/bedrock-agentcore/runtimes/*:log-stream:*"
+            ]
+        },
+        {
+            "Sid": "AgentCoreXRayTelemetry",
+            "Effect": "Allow",
+            "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AgentCoreRuntimeMetrics",
+            "Effect": "Allow",
+            "Action": [
+                "cloudwatch:PutMetricData"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "cloudwatch:namespace": "bedrock-agentcore"
+                }
+            }
+        }
+    ]
+}

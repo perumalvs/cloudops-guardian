@@ -1,0 +1,31 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowGovernedProcessTermination",
+            "Effect": "Allow",
+            "Action": "ssm:SendCommand",
+            "Resource": [
+                "arn:aws:ssm:us-east-1:__ACCOUNT_ID__:document/CloudOpsGuardian-TerminateProcess",
+                "arn:aws:ec2:us-east-1:__ACCOUNT_ID__:instance/__DEMO_INSTANCE_ID__"
+            ]
+        },
+        {
+            "Sid": "AllowReadActionResult",
+            "Effect": "Allow",
+            "Action": "ssm:GetCommandInvocation",
+            "Resource": "*"
+        },
+        {
+            "Sid": "AllowRebootOnlyDemoInstance",
+            "Effect": "Allow",
+            "Action": "ec2:RebootInstances",
+            "Resource": "arn:aws:ec2:us-east-1:__ACCOUNT_ID__:instance/__DEMO_INSTANCE_ID__",
+            "Condition": {
+                "StringEquals": {
+                    "ec2:ResourceTag/AgentRemediation": "Enabled"
+                }
+            }
+        }
+    ]
+}

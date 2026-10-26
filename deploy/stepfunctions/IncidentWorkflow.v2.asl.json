@@ -1,0 +1,74 @@
+{
+  "Comment": "CloudOps Guardian incident workflow: create case, then investigate and notify",
+  "StartAt": "Lambda Invoke",
+  "States": {
+    "Lambda Invoke": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "Payload": "{% $states.input %}",
+        "FunctionName": "arn:aws:lambda:us-east-1:__ACCOUNT_ID__:function:CloudOpsGuardian-IncidentHandler:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Investigate"
+    },
+    "Success": {
+      "Type": "Succeed"
+    },
+    "Investigate": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Comment": "Orchestrator is idempotent: a DUPLICATE case or an already-handled case is skipped inside the Lambda.",
+      "Arguments": {
+        "FunctionName": "arn:aws:lambda:us-east-1:__ACCOUNT_ID__:function:CloudOpsGuardian-Orchestrator:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Output": "{% $states.result.Payload %}",
+      "TimeoutSeconds": 330,
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 2,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "InvestigationFailed",
+          "Output": "{% $states.errorOutput %}"
+        }
+      ],
+      "Next": "Success"
+    },
+    "InvestigationFailed": {
+      "Type": "Fail",
+      "Error": "InvestigationFailed",
+      "Cause": "The case was created but the Orchestrator did not complete. See the execution history and the case audit trail."
+    }
+  },
+  "QueryLanguage": "JSONata"
+}
